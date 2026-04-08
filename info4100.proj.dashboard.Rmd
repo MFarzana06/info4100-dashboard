@@ -82,20 +82,51 @@ Go through the planning / sketching process described in the reading about dashb
 
 **Question 1:** You will make a student dashboard and a teacher dashboard. Carefully consider the implications of this for design and content. To plan, answer the following prompts once for the student dashboard and then for the teacher dashboard. The more concrete you are here the easier it will be later. Focus on the concrete ideas that you will implement in the next steps. You can iterate on this step and modify your responses as your ideas for the dashboard become clearer. You should explore the dataset in R for 5-10 minutes to get a good sense of what the dataset has to offer.
 
-*Planning for the student dashboard*
+***Planning for the student dashboard***
 
--   For whom? Who will use it and what is their background?
-    -   [add your answer here]
-    -   [add your answer here]
--   Why? What is the goal? What questions to answer?
-    -   [add your answer here]
-    -   [add your answer here]
--   What? What data to show and what is its structure?
-    -   [add your answer here]
-    -   [add your answer here]
--   How? How will visualizations support the goal?
-    -   [add your answer here]
-    -   [add your answer here]
+-   **For whom? Who will use it and what is their background?**
+
+    The primary users will be undergraduate students enrolled in the BI course. These students will have have varying levels of prior experience (as captured by the skill_survey_score), ranging from beginners to more experienced learners. They are not expected to have advanced data analysis skills, so the dashboard must be intuitive, visually clear, and focused on personal performance insights. Additionally, students are likely to use this dashboard periodically (e.g., before quizzes or exams), so it should emphasize quick interpretation rather than deep technical exploration.
+
+-   **Why? What is the goal? What questions to answer?**
+
+    The goal of the student dashboard is to support self-reflection, performance tracking, and behavioral awareness. It helps students understand how their engagement and perceptions relate to their outcomes.
+
+Key questions include:
+
+-   How am I performing relative to the class?
+-   Is my quiz performance improving or declining over time?
+-   How does my engagement or “temperature” relate to my understanding?
+-   How does my prior experience (survey score) relate to my performance?
+-   Am I participating consistently in class activities?
+
+<!-- -->
+
+-   **What? What data to show and what is its structure?**
+
+    For the student dashboard, the data will show combines of both the experience dataset and the quiz (iClicker) dataset to provide a personalized view of a student’s engagement and performance over time. The underlying structure is a longitudinal (panel) dataset, where each row represents a single student’s interaction in a specific class session. This allows the dashboard to track how an individual student’s behavior evolves across the semester.
+
+    Key variables will include performance measures such as quiz_score and clicker accuracy (correct_q_clicker out of completed_q_clicker), engagement indicators like attendance and clicker participation rates (total_completed_clicker relative to total_possible_clicker), and sentiment data through avg_t_clicker, which captures how the student feels about the material. These are paired with background characteristics from the experience dataset, such as skill_survey_score and its components, to contextualize performance. In addition to individual-level data, the dashboard incorporates class-level aggregates, such as average quiz scores and score distributions, so that students can compare their performance to peers.
+
+-   **How? How will visualizations support the goal?**
+
+    The selected visualizations will directly map to student decision-making with:
+
+	•	**Histogram of average class quiz grades + student marker**
+
+Helps students contextualize their performance within the distribution (norm-referenced understanding).
+
+	•	**Line plot of individual quiz scores over time**
+
+Reveals trends (improvement, stagnation, decline), encouraging behavioral adjustments.
+
+	•	**Line chart of avg_t_clicker over time**
+
+Allows students to reflect on how their perceived understanding evolves and whether confusion predicts lower performance.
+
+	•	**Histogram of completed_t_clicker**
+
+Highlights participation levels and whether a student is under-engaging compared to the class.
 
 *Planning for the teacher dashboard*
 
