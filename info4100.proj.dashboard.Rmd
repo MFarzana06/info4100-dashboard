@@ -1,6 +1,6 @@
 ---
 title: "Dashboards for Clicker Data"
-author: '[[Team Night Owl, Kayla Runkel (kmr227), Gianna Ou (gyo4), Shiwen Zhao (sz752), Theo Berk (tb547), Maisha Farzana (maf372), and Steven Xie (jx453).]]'
+author: '[[Team Night Owl, Kayla Runkel (kmr227), Gianna Ou (gyo4), Shiwen Zhao (sz752), Theo Berk (tb547), Maisha Farzana (maf372), and Steven Xie (jx453)]]'
 subtitle: INFO 4100 Learning Analytics
 output:
   word_document: default
@@ -130,18 +130,39 @@ Highlights participation levels and whether a student is under-engaging compared
 
 *Planning for the teacher dashboard*
 
--   For whom? Who will use it and what is their background?
-    -   [add your answer here]
-    -   [add your answer here]
--   Why? What is the goal? What questions to answer?
-    -   [add your answer here]
-    -   [add your answer here]
--   What? What data to show and what is its structure?
-    -   [add your answer here]
-    -   [add your answer here]
--   How? How will visualizations support the goal?
-    -   [add your answer here]
-    -   [add your answer here]
+-   **For whom? Who will use it and what is their background?**
+    
+    The teacher dashboard is mainly meant for the professor of the Business Intelligence class. It could also provide insight to TAs who may be working with students to help improve that student's performance in the class. Currently, the professor has access to the students' self reported skill level for a variety of skills that will appear in the class and the results from each iClicker session during lecture. The problem is that this data provides no use when it's not in an interpretable form that the professor can digest and find patterns between the teaching and the students' understanding.
+    
+-   **Why? What is the goal? What questions to answer?**
+    
+    The goal is for the professor of the BI class to gain insights about the students of the class and how they are engaging and performing in the class. With that information, the professor hopes to be able to better help the students in class. If the professor understands the performance of her class, she can also provide feedback about where her students stand in relation to other students in the class.
+    
+-   **What? What data to show and what is its structure?**
+    
+    The dashboard will include fast facts like the classes average quiz score and average attendance. It will also combine both the experience dataset and the quiz (iClicker) dataset in visualizations that display how students are performing in the class and how statistics like attendance and performance might change across the different weeks. By combining the two datasets, we can display how previous experience might affect a student's learning in the course. By analyzing the data across the weeks, the professor can understand where students might struggle or if there needs to be extra steps to ensure student participation and engagement.
+    
+    The combined dataset will contain one record per student per lecture. The experience data will be joined onto the quiz data. For the teacher dashboard, some of the key variables with include skill_survery_score for comparing the impact that prior experience has on a student's performance, quiz_score to compare performance across all students, and avg_t_clicker to understand the students' comfortability each week.
+    
+-   **How? How will visualizations support the goal?**
+    
+    The selected visualizations will provide insights on class performance and engagement:
+
+	•	**Lineplot of class attendance overtime compared for different levels of prior experience**
+	
+	Allows the professor to understand which students are coming to class and how prior experience affects engagement.
+	
+	• **Histogram of average class quiz grades**
+	
+	Gives an understanding of how well students tend to perform on the iClicker questions in class.
+	
+	• **Lineplot of avg_t_clicker scores across each week for the whole class**
+	
+	Exposes what material might be more difficult or be harder for students to understand.
+	
+	• **Scatterplot of survery scores versus average quiz scores with a line of best fit**
+	
+	Highlights how overall class performance may be skewed by prior skill experience.
 
 **Question 2:** Based on your plan above, make a sketch of what the dashboard would look like. See this week's readings for examples. Be detailed about what kinds of data points and visualizations you want to see in different parts of the page. Consider the user experience and how you should position more general information compared to more specific information, and where you may need some additional explanation to help the viewer understand a graphic, for example. In your sketch, it is useful to give labels to different objects, because in the steps below you can split up work between team members and the labels will help you connect the UI with the data objects. Show your sketches in section to get feedback from the teaching team.
 
