@@ -142,7 +142,7 @@ Highlights participation levels and whether a student is under-engaging compared
     
     The dashboard will include fast facts like the classes average quiz score and average attendance. It will also combine both the experience dataset and the quiz (iClicker) dataset in visualizations that display how students are performing in the class and how statistics like attendance and performance might change across the different weeks. By combining the two datasets, we can display how previous experience might affect a student's learning in the course. By analyzing the data across the weeks, the professor can understand where students might struggle or if there needs to be extra steps to ensure student participation and engagement.
     
-    The combined dataset will contain one record per student per lecture. The experience data will be joined onto the quiz data. For the teacher dashboard, some of the key variables with include skill_survery_score for comparing the impact that prior experience has on a student's performance, quiz_score to compare performance across all students, and avg_t_clicker to understand the students' comfortability each week.
+    The combined dataset will contain one record per student per class session (sometimes multiple per lecture). There will likely be visualizations where we aggregate data by lecture. The experience data will be joined onto the quiz data. For the teacher dashboard, some of the key variables with include skill_survery_score for comparing the impact that prior experience has on a student's performance, quiz_score to compare performance across all students, and avg_t_clicker to understand the students' comfortability each lecture.
     
 -   **How? How will visualizations support the goal?**
     
@@ -226,7 +226,48 @@ Use the space below to be ready for your information visualizations in the dashb
 ####### BEGIN INPUT             #######
 #######################################
 
+# combine quiz and experience datasets by STUDENT_KEY and YEAR
+df <- left_join(quiz, experience, by = c("STUDENT_KEY", "YEAR"))
+head(df)
 
+# creates dataframe grouped by lecture
+# for some lectures, there are multiple iClicker sessions
+# the grouping combines the sessions into one per lecture
+df_by_lecture <- df %>%
+  group_by(STUDENT_KEY, 
+           ACAD_DATE_KEY, 
+           YEAR, 
+           QUIZ_NUMBER,
+           ATTENDED, 
+           PROG,
+           DATABASE_SCORE, 
+           SQL_SCORE, 
+           PROGRAMING_SCORE,
+           STORED_PROC_SCORE,
+           ETL_SCORE,
+           DATA_VIS_SCORE,
+           REQUIREMENT_GATHER_SCORE,
+           SKILL_SURVEY_SCORE) %>%
+  summarise(SESSION_NUMBER = min(SESSION_NUMBER),
+            TOTAL_POSSIBLE_CLICKER = sum(TOTAL_POSSIBLE_CLICKER),
+            TOTAL_COMPLETED_CLICKER = sum(TOTAL_COMPLETED_CLICKER),
+            COMPLETED_Q_CLICKER = sum(COMPLETED_Q_CLICKER),
+            CORRECT_Q_CLICKER = sum(CORRECT_Q_CLICKER),
+            COMPLETED_T_CLICKER = sum(COMPLETED_T_CLICKER),
+            AVG_T_CLICKER = mean(AVG_T_CLICKER),
+            QUIZ_SCORE = mean(QUIZ_SCORE, na.rm = TRUE)) %>%
+  arrange(STUDENT_KEY, ACAD_DATE_KEY)
+
+# since we combined sessions where there were multiple per lecture,
+# let's add a field to indicate each lecture by number
+# LECTURE_NUMBER
+df_by_lecture <- df_by_lecture %>%
+  group_by(STUDENT_KEY) %>%
+  arrange(SESSION_NUMBER, .by_group = TRUE) %>%
+  mutate(LECTURE_NUMBER = row_number()) %>%
+  ungroup()
+
+head(df_by_lecture)
 
 #######################################
 #######################################
@@ -286,6 +327,61 @@ server = function(input, output) {
 #######################################
     
 }
+
+# create plots here to test before adding to dashboard
+    
+    # to compare class attendance per lecture,
+    # i need to group the data by lecture
+    attendance_per_lecture <- df_by_lecture %>%
+      group_by(LECTURE_NUMBER) %>%
+      summarise(TOTAL_AVG_ATTENDANCE = mean(ATTENDED))
+    
+    avg_skill_survery_score <- mean(df_by_lecture$SKILL_SURVEY_SCORE, na.rm = TRUE)
+    
+    less_skilled_attendance_per_lecture <- df_by_lecture %>%
+      filter(SKILL_SURVEY_SCORE < avg_skill_survery_score) %>%
+      group_by(LECTURE_NUMBER) %>%
+      summarise(LESS_SKILLED_AVG_ATTENDANCE = mean(ATTENDED))
+    
+    more_skilled_attendance_per_lecture <- df_by_lecture %>%
+      filter(SKILL_SURVEY_SCORE >= avg_skill_survery_score) %>%
+      group_by(LECTURE_NUMBER) %>%
+      summarise(MORE_SKILLED_AVG_ATTENDANCE = mean(ATTENDED))
+    
+    attendance_per_lecture <- attendance_per_lecture %>% 
+      inner_join(less_skilled_attendance_per_lecture) %>%
+      inner_join(more_skilled_attendance_per_lecture)
+    
+    attendance_per_lecture <- attendance_per_lecture %>%
+      pivot_longer(cols = c(TOTAL_AVG_ATTENDANCE,
+                            LESS_SKILLED_AVG_ATTENDANCE, 
+                            MORE_SKILLED_AVG_ATTENDANCE),
+                   names_to = "SKILL_LEVEL",
+                   values_to = "AVG_ATTENDANCE")
+    
+    # lineplot of class attendance each week given different prior experience levels
+    ggplot(attendance_per_lecture %>%
+             filter(LECTURE_NUMBER < 21), 
+           aes(x = LECTURE_NUMBER,
+               y = AVG_ATTENDANCE, 
+               color = SKILL_LEVEL)) +
+      geom_point(size = 2) + 
+      geom_line(size = 1.5) +
+      scale_color_manual(
+        values = c(
+          "TOTAL_AVG_ATTENDANCE" = "#FFCBE1",
+          "LESS_SKILLED_AVG_ATTENDANCE" = "#F9E1A8",
+          "MORE_SKILLED_AVG_ATTENDANCE" = "#D6E5BD"
+        ),
+        labels = c(
+          "TOTAL_AVG_ATTENDANCE" = "All Students",
+          "LESS_SKILLED_AVG_ATTENDANCE" = "Skills Below Average",
+          "MORE_SKILLED_AVG_ATTENDANCE" = "Skills Above Average"
+          ),
+        name = "Skill Level"
+        ) +
+      theme_classic()
+
 ```
 
 # Part 5: Produce Dashboard and Reflect
