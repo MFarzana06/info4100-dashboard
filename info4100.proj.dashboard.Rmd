@@ -220,6 +220,14 @@ student_dash = tabItem(
       width = 12,
       plotOutput("student_hist")
     )
+  ),
+  
+  fluidRow(
+    box(
+      title = "Your Temperature (Engagement) Over Time",
+      width = 12,
+      plotOutput("student_temp_trend")
+    )
   )
 )
 #######################################
@@ -315,6 +323,25 @@ server = function(input, output) {
         hist(quiz$QUIZ_SCORE)
     })
     
+    output$student_temp_trend = renderPlot({
+  
+    student_data <- df_by_lecture %>%
+    filter(STUDENT_KEY == input$student_id)
+  
+    ggplot(student_data, aes(x = LECTURE_NUMBER, y = AVG_T_CLICKER)) +
+    geom_line(color = "#2C7FB8", size = 1.5) +
+    geom_point(color = "#2C7FB8", size = 2) +
+    
+    labs(
+      title = paste("Temperature Trend for Student", input$student_id),
+      x = "Lecture Number",
+      y = "Average Temperature (0–5)"
+    ) +
+    
+    ylim(0, 5) +
+    theme_classic()
+    })
+    
     output$student_hist = renderPlot({
   
     # average quiz score per student
@@ -327,7 +354,7 @@ server = function(input, output) {
     filter(STUDENT_KEY == input$student_id) %>%
     pull(avg_quiz)
   
-    # class average 
+    # class average (optional but recommended)
     class_avg <- mean(avg_quiz_by_student$avg_quiz, na.rm = TRUE)
   
     ggplot(avg_quiz_by_student, aes(x = avg_quiz)) +
