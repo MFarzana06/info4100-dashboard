@@ -327,7 +327,7 @@ server = function(input, output) {
     filter(STUDENT_KEY == input$student_id) %>%
     pull(avg_quiz)
   
-    # class average (optional but recommended)
+    # class average 
     class_avg <- mean(avg_quiz_by_student$avg_quiz, na.rm = TRUE)
   
     ggplot(avg_quiz_by_student, aes(x = avg_quiz)) +
