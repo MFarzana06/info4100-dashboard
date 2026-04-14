@@ -190,7 +190,7 @@ instructor_dash = tabItem(
    #   infoBoxOutput("attendance_across_lecture"),
    #   infoBoxOutput("inst.info2")
    # ),
-    # Any visualization
+    # visualizations
     fluidRow(
       column(
         width = 8,
@@ -370,7 +370,7 @@ server = function(input, output) {
     class_avg <- mean(avg_quiz_by_student$avg_quiz, na.rm = TRUE)
   
     ggplot(avg_quiz_by_student, aes(x = avg_quiz)) +
-    geom_histogram(binwidth = 5, fill = "#BCD8EC", color = "black") +
+    geom_histogram(binwidth = 4, fill = "#BCD8EC", color = "black") +
     
     # student line
     geom_vline(xintercept = student_avg,
@@ -399,13 +399,7 @@ server = function(input, output) {
     theme_classic()
     })
     output$inst.plot2 = renderPlot({
-        # I'm giving you three examples here
-        # only the last one will be displayed
-        # but you can try out each one.
-        # As you can see, using ggplot allows you to 
-        # make much better-looking visualizations.
       
-        # simple
         hist(quiz$TOTAL_COMPLETED_CLICKER) 
       
         # using ggplot
@@ -414,16 +408,16 @@ server = function(input, output) {
         
         # using ggplot to make it clearer
         ggplot(quiz, aes(x = TOTAL_COMPLETED_CLICKER)) + 
-          geom_density(fill="gray") + # makes the density line and gray fill
-          labs(x = "Completed Clicker Questions", y = "Density") + # change axis labels
-          theme_classic() # to use white background
+          geom_density(fill="gray") +
+          labs(x = "Completed Clicker Questions", y = "Density") + 
+          theme_classic() 
         
     })
     
     output$attendance_across_lecture = renderPlot({
     
       # to compare class attendance per lecture,
-      # i need to group the data by lecture
+      # we need to group the data by lecture
       attendance_per_lecture <- df_by_lecture %>%
         group_by(LECTURE_NUMBER) %>%
         summarise(TOTAL_AVG_ATTENDANCE = mean(ATTENDED))
@@ -564,7 +558,7 @@ dbody = dashboardBody(
 # Combining header, sidebar, and body
 ui = dashboardPage(dhead, dside, dbody)
 
-# Generating a local instance of your dashboard
+# Generating a local instance of our dashboard
 shinyApp(ui, server)
 ```
 
