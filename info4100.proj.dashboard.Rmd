@@ -222,7 +222,7 @@ student_dash = tabItem(
   
   fluidRow(
     selectInput("student_id", "Select Student",
-                choices = unique(df_by_lecture$STUDENT_KEY),
+                choices = sort(unique(quiz$STUDENT_KEY)),
                 selected = 105)
   ),
   
