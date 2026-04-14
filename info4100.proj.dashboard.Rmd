@@ -186,15 +186,15 @@ instructor_dash = tabItem(
     h2("Instructor Dashboard"),
     
     # Dynamic infoBoxes
-    fluidRow(
-      infoBoxOutput("inst.info1"),
-      infoBoxOutput("inst.info2")
-    ),
+   # fluidRow(
+   #   infoBoxOutput("attendance_across_lecture"),
+   #   infoBoxOutput("inst.info2")
+   # ),
     # Any visualization
     fluidRow(
         box(
             title = "Box 1",
-            plotOutput("inst.plot1", height = 250)
+            plotOutput("attendance_across_lecture", height = 250)
         ),
         box(
             title = "Box 2",
@@ -408,64 +408,65 @@ server = function(input, output) {
         
     })
     
+    output$attendance_across_lecture = renderPlot({
+    
+      # to compare class attendance per lecture,
+      # i need to group the data by lecture
+      attendance_per_lecture <- df_by_lecture %>%
+        group_by(LECTURE_NUMBER) %>%
+        summarise(TOTAL_AVG_ATTENDANCE = mean(ATTENDED))
+      
+      avg_skill_survery_score <- mean(df_by_lecture$SKILL_SURVEY_SCORE, na.rm = TRUE)
+      
+      less_skilled_attendance_per_lecture <- df_by_lecture %>%
+        filter(SKILL_SURVEY_SCORE < avg_skill_survery_score) %>%
+        group_by(LECTURE_NUMBER) %>%
+        summarise(LESS_SKILLED_AVG_ATTENDANCE = mean(ATTENDED))
+      
+      more_skilled_attendance_per_lecture <- df_by_lecture %>%
+        filter(SKILL_SURVEY_SCORE >= avg_skill_survery_score) %>%
+        group_by(LECTURE_NUMBER) %>%
+        summarise(MORE_SKILLED_AVG_ATTENDANCE = mean(ATTENDED))
+      
+      attendance_per_lecture <- attendance_per_lecture %>% 
+        inner_join(less_skilled_attendance_per_lecture) %>%
+        inner_join(more_skilled_attendance_per_lecture)
+      
+      attendance_per_lecture <- attendance_per_lecture %>%
+        pivot_longer(cols = c(TOTAL_AVG_ATTENDANCE,
+                              LESS_SKILLED_AVG_ATTENDANCE, 
+                              MORE_SKILLED_AVG_ATTENDANCE),
+                     names_to = "SKILL_LEVEL",
+                     values_to = "AVG_ATTENDANCE")
+      
+      # lineplot of class attendance each week given different prior experience levels
+      ggplot(attendance_per_lecture %>%
+               filter(LECTURE_NUMBER < 21), 
+             aes(x = LECTURE_NUMBER,
+                 y = AVG_ATTENDANCE, 
+                 color = SKILL_LEVEL)) +
+        geom_point(size = 2) + 
+        geom_line(size = 1.5) +
+        scale_color_manual(
+          values = c(
+            "TOTAL_AVG_ATTENDANCE" = "#FFCBE1",
+            "LESS_SKILLED_AVG_ATTENDANCE" = "#F9E1A8",
+            "MORE_SKILLED_AVG_ATTENDANCE" = "#D6E5BD"
+          ),
+          labels = c(
+            "TOTAL_AVG_ATTENDANCE" = "All Students",
+            "LESS_SKILLED_AVG_ATTENDANCE" = "Skills Below Average",
+            "MORE_SKILLED_AVG_ATTENDANCE" = "Skills Above Average"
+            ),
+          name = "Skill Level"
+          ) +
+        theme_classic()
+      })
+    
 #######################################
 #######################################
     
 }
-
-# create plots here to test before adding to dashboard
-    
-    # to compare class attendance per lecture,
-    # i need to group the data by lecture
-    attendance_per_lecture <- df_by_lecture %>%
-      group_by(LECTURE_NUMBER) %>%
-      summarise(TOTAL_AVG_ATTENDANCE = mean(ATTENDED))
-    
-    avg_skill_survery_score <- mean(df_by_lecture$SKILL_SURVEY_SCORE, na.rm = TRUE)
-    
-    less_skilled_attendance_per_lecture <- df_by_lecture %>%
-      filter(SKILL_SURVEY_SCORE < avg_skill_survery_score) %>%
-      group_by(LECTURE_NUMBER) %>%
-      summarise(LESS_SKILLED_AVG_ATTENDANCE = mean(ATTENDED))
-    
-    more_skilled_attendance_per_lecture <- df_by_lecture %>%
-      filter(SKILL_SURVEY_SCORE >= avg_skill_survery_score) %>%
-      group_by(LECTURE_NUMBER) %>%
-      summarise(MORE_SKILLED_AVG_ATTENDANCE = mean(ATTENDED))
-    
-    attendance_per_lecture <- attendance_per_lecture %>% 
-      inner_join(less_skilled_attendance_per_lecture) %>%
-      inner_join(more_skilled_attendance_per_lecture)
-    
-    attendance_per_lecture <- attendance_per_lecture %>%
-      pivot_longer(cols = c(TOTAL_AVG_ATTENDANCE,
-                            LESS_SKILLED_AVG_ATTENDANCE, 
-                            MORE_SKILLED_AVG_ATTENDANCE),
-                   names_to = "SKILL_LEVEL",
-                   values_to = "AVG_ATTENDANCE")
-    
-    # lineplot of class attendance each week given different prior experience levels
-    ggplot(attendance_per_lecture %>%
-             filter(LECTURE_NUMBER < 21), 
-           aes(x = LECTURE_NUMBER,
-               y = AVG_ATTENDANCE, 
-               color = SKILL_LEVEL)) +
-      geom_point(size = 2) + 
-      geom_line(size = 1.5) +
-      scale_color_manual(
-        values = c(
-          "TOTAL_AVG_ATTENDANCE" = "#FFCBE1",
-          "LESS_SKILLED_AVG_ATTENDANCE" = "#F9E1A8",
-          "MORE_SKILLED_AVG_ATTENDANCE" = "#D6E5BD"
-        ),
-        labels = c(
-          "TOTAL_AVG_ATTENDANCE" = "All Students",
-          "LESS_SKILLED_AVG_ATTENDANCE" = "Skills Below Average",
-          "MORE_SKILLED_AVG_ATTENDANCE" = "Skills Above Average"
-          ),
-        name = "Skill Level"
-        ) +
-      theme_classic()
     
 ```
 
