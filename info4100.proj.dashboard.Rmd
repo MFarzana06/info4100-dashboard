@@ -192,15 +192,27 @@ instructor_dash = tabItem(
    # ),
     # Any visualization
     fluidRow(
+      column(
+        width = 8,
         box(
             title = "Box 1",
+            width = 12,
             plotOutput("attendance_across_lecture", height = 250)
         ),
         box(
             title = "Box 2",
+            width = 12,
             plotOutput("inst.plot2", height = 250)
         )
+    ),
+    column(
+    width = 4,
+    infoBoxOutput("percent_clicker_correct", width = 12),
+    infoBoxOutput("average_quiz_score", width = 12),
+    infoBoxOutput("average_attendance", width = 12),
+    infoBoxOutput("class_size", width = 12)
     )
+  )
 )
 
 # Another empty tab
@@ -462,6 +474,55 @@ server = function(input, output) {
           ) +
         theme_classic()
       })
+    
+    # instructor dashboard - simple class statistics
+    output$percent_clicker_correct <- renderInfoBox({
+      percent_clicker_correct <- 
+        (sum(df_by_lecture$CORRECT_Q_CLICKER) /
+           sum(df_by_lecture$COMPLETED_Q_CLICKER)) * 100
+      
+      infoBox(
+        title = "Avg iClicker Score",
+        value = paste0(round(percent_clicker_correct, 2), "%"),
+        icon = icon("check-circle"),
+        color = "lime"
+        )
+      })
+    
+    output$average_quiz_score <- renderInfoBox({
+      average_quiz_score <- 
+        (mean(df_by_lecture$QUIZ_SCORE, na.rm = TRUE) / 20) * 100
+      
+      infoBox(
+        title = "Avg Quiz Score",
+        value = paste0(round(average_quiz_score, 2), "%"),
+        icon = icon("edit"),
+        color = "purple"
+        )
+      })
+    
+    output$average_attendance <- renderInfoBox({
+      average_attendance <- mean(df_by_lecture$ATTENDED) * 100
+      
+      infoBox(
+        title = "Avg Attendance",
+        value = paste0(round(average_attendance, 2), "%"),
+        icon = icon("users"),
+        color = "light-blue"
+        )
+      })
+    
+    output$class_size <- renderInfoBox({
+      class_size <- length(unique(df_by_lecture$STUDENT_KEY))
+      
+      infoBox(
+        title = "Class Size",
+        value = class_size,
+        icon = icon("user-friends"),
+        color = "orange"
+        )
+      })
+    
     
 #######################################
 #######################################
