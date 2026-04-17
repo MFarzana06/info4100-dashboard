@@ -240,6 +240,19 @@ student_dash = tabItem(
       width = 12,
       plotOutput("student_temp_trend")
     )
+  ),
+  
+  fluidRow(
+    box(
+      title = "Your Confidence in Class Material Compared to Class",
+      width = 12,
+      plotOutput("temp_clicker")
+    )
+  ), 
+  fluidRow(
+      infoBoxOutput("total_asked", width = 4),
+      infoBoxOutput("total_answered", width = 4),
+      infoBoxOutput("total_correct", width = 4),
   )
 )
 #######################################
@@ -514,6 +527,98 @@ server = function(input, output) {
         value = class_size,
         icon = icon("user-friends"),
         color = "orange"
+        )
+      })
+    
+    # maisha code
+    output$temp_clicker <- renderPlot({
+    student_avg_t <- quiz %>%
+      filter(STUDENT_KEY == input$student_id) %>%
+      summarise(avg_t = mean(COMPLETED_T_CLICKER, na.rm = TRUE)) %>%
+      pull(avg_t)
+    
+    ggplot(quiz, aes(x = COMPLETED_T_CLICKER)) +
+      geom_bar(fill = "#BCD8EC", color = "white", width = 0.8) +
+      geom_vline(
+        xintercept = student_avg_t,
+        color = "#FFCBE1",
+        linewidth = 1.4,
+        linetype = "dashed"
+        ) +
+      annotate(
+        "text",
+        x = student_avg_t + 0.15,
+        y = 850,
+        label = "Student average",
+        color = "#C97FA1",
+        hjust = 0,
+        size = 4
+        ) +
+      scale_x_continuous(breaks = 0:6, limits = c(0, 6.8)) +
+      labs(
+        title = "Temperature Clicker Participation",
+        subtitle = "Class distribution with the selected student's average highlighted",
+        x = "Completed Temperature Clicker Questions",
+        y = "Number of Sessions"
+        ) +
+      theme_minimal(base_size = 14) +
+      theme(
+        plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+        plot.subtitle = element_text(size = 11, hjust = 0.5),
+        axis.title = element_text(face = "bold"),
+        panel.grid.minor = element_blank()
+        )
+    })
+    
+    # student statistics
+    output$total_asked <- renderInfoBox({
+      student_summary <- quiz %>%
+      filter(STUDENT_KEY == input$student_id) %>%
+      summarise(
+        total_asked = sum(TOTAL_POSSIBLE_CLICKER, na.rm = TRUE),
+        )
+      
+      total_asked <- student_summary$total_asked
+      
+      infoBox(
+        title = "Clickers Asked",
+        value = total_asked,
+        icon = icon("question"),
+        color = "purple"
+        )
+      })
+    
+    output$total_answered <- renderInfoBox({
+      student_summary <- quiz %>%
+      filter(STUDENT_KEY == input$student_id) %>%
+      summarise(
+        total_answered = sum(TOTAL_COMPLETED_CLICKER, na.rm = TRUE),
+        )
+      
+      total_answered <- student_summary$total_answered
+      
+      infoBox(
+        title = "Clickers Answered",
+        value = total_answered,
+        icon = icon("exclamation"),
+        color = "olive"
+        )
+      })
+    
+    output$total_correct <- renderInfoBox({
+      student_summary <- quiz %>%
+      filter(STUDENT_KEY == input$student_id) %>%
+      summarise(
+        total_correct = sum(CORRECT_Q_CLICKER, na.rm = TRUE)
+        )
+      
+      total_correct <- student_summary$total_correct
+      
+      infoBox(
+        title = "Clickers Correct",
+        value = total_correct,
+        icon = icon("check"),
+        color = "teal"
         )
       })
     
