@@ -1,8 +1,10 @@
 ---
 title: "Dashboards for Clicker Data"
-author: '[[Team Night Owl, Kayla Runkel (kmr227), Gianna Ou (gyo4), Shiwen Zhao (sz752), Theo Berk (tb547), Maisha Farzana (maf372), and Steven Xie (jx453)]]'
+author: '[[Team Night Owl, Kayla Runkel (kmr227), Gianna Ou (gyo4), Shiwen Zhao (sz752),
+  Theo Berk (tb547), Maisha Farzana (maf372), and Steven Xie (jx453)]]'
 subtitle: INFO 4100 Learning Analytics
 output:
+  pdf_document: default
   word_document: default
 ---
 
@@ -203,6 +205,11 @@ instructor_dash = tabItem(
             title = "Box 2",
             width = 12,
             plotOutput("inst.plot2", height = 250)
+        ),
+        box(
+            title = "Survey Score vs Average Quiz Score",
+            width = 12,
+            plotOutput("survey_vs_quiz", height = 250)
         )
     ),
     column(
@@ -481,7 +488,30 @@ server = function(input, output) {
           ) +
         theme_classic()
       })
-    
+
+    output$survey_vs_quiz = renderPlot({
+
+      student_summary <- df_by_lecture %>%
+        group_by(STUDENT_KEY) %>%
+        summarise(
+          SKILL_SURVEY_SCORE = first(SKILL_SURVEY_SCORE),
+          AVG_QUIZ_SCORE = mean(QUIZ_SCORE, na.rm = TRUE)
+        ) %>%
+        filter(!is.na(SKILL_SURVEY_SCORE))
+
+      ggplot(student_summary,
+             aes(x = SKILL_SURVEY_SCORE, y = AVG_QUIZ_SCORE)) +
+        geom_point(color = "#2C7FB8", size = 2, alpha = 0.7) +
+        geom_smooth(method = "lm", se = TRUE,
+                    color = "#FFCBE1", fill = "#FFE3EF") +
+        labs(
+          title = "Prior Skill vs Average Quiz Performance",
+          x = "Skill Survey Score (self-reported prior experience)",
+          y = "Average Quiz Score (out of 20)"
+        ) +
+        theme_classic()
+      })
+
     # instructor dashboard - simple class statistics
     output$percent_clicker_correct <- renderInfoBox({
       percent_clicker_correct <- 
@@ -669,7 +699,7 @@ shinyApp(ui, server)
 
 **Question 5:** Add screenshots of your group's dahsboards below using this syntax or simply add them to the Word document after knitting:
 
-![Dashboard Screenshot](example_dash.png)
+<!-- ![Dashboard Screenshot](example_dash.png) -->
 
 **Question 6:** Evaluate your group dashboard from the perspective of the instructor (teacher dashboard) and from the perspective of the student (student dashboard). What do you like about it, what would you change or add to it if you had more time?
 
@@ -695,7 +725,7 @@ shinyApp(ui, server)
 
 **We want to give students an estimate of how much time this homework will take. Please indicate how many hours you spent to complete this homework here.**
 
--   I spent [insert your time] hours.
+-   Shiwen Zhao (sz752): I spent about 1-2 hours.
 
 # Generative AI usage
 
@@ -703,6 +733,8 @@ shinyApp(ui, server)
 
 -   How much did you use generative AI (e.g., not at all, some, most, or all the questions) and which one did you use?
 -   If you used generative AI, how did you use it and was it helpful?
+
+-   Shiwen Zhao (sz752): I used Claude for my assigned task (the scatterplot of survey score vs. average quiz score with a line of best fit). I came up with the implementation plan myself and then had Claude help me translate it into R/ggplot code and debug issues during testing. It was helpful for speeding up the coding and fixing small errors.
 
 # Submit Project
 
