@@ -706,11 +706,11 @@ shinyApp(ui, server)
 *Reflection for the student dashboard*
 
 -   What do you like about it?
-    -   [add your answer here]
+    -   We like that the student dashboard we were able to make a feature that allowed results for different students. This was done by selecting the student ID at the top of the dashboard.
 -   What would you change or add to it if you had more time?
     -   [add your answer here]
 -   What was the biggest challenge you faced? How did you address it?
-    -   [add your answer here]
+    -   The biggest challenge we faced was deciding which data visualizations we wanted to implement them. We addressed this by doing some research and seeing some example dashboards and how we can do something similar.
 
 *Reflection for the teacher dashboard*
 
@@ -726,12 +726,14 @@ shinyApp(ui, server)
 **We want to give students an estimate of how much time this homework will take. Please indicate how many hours you spent to complete this homework here.**
 
 -   Shiwen Zhao (sz752): I spent about 1-2 hours.
+-   Gianna Ou (gyo4): I spent 2-3 hours.
 
 # Generative AI usage
 
 **As stated in the course syllabus, using generative AI is allowed to help you as you complete this homework. We are interested in how it is being used and whether it is helpful for you.**
 
 -   How much did you use generative AI (e.g., not at all, some, most, or all the questions) and which one did you use?
+
 -   If you used generative AI, how did you use it and was it helpful?
 
 -   Shiwen Zhao (sz752): I used Claude for my assigned task (the scatterplot of survey score vs. average quiz score with a line of best fit). I came up with the implementation plan myself and then had Claude help me translate it into R/ggplot code and debug issues during testing. It was helpful for speeding up the coding and fixing small errors.
