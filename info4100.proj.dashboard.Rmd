@@ -170,13 +170,9 @@ Highlights participation levels and whether a student is under-engaging compared
 
 Each dashboard should contain at least 4 data visualizations. You may include any additional summary statistics (e.g. key percentages or tables).
 
-**Instructor Dashboard Sketch**
+![](images/clipboard-3434643013.png)
 
-![Instructor Dashboard Sketch](sketches/instructor_sketch.jpg)
-
-**Student Dashboard Sketch**
-
-![Student Dashboard Sketch](sketches/student_sketch.jpg)
+![](images/clipboard-349431012.png)
 
 # Part 2: Dashboard Wire-frame Implementation
 
@@ -761,27 +757,27 @@ shinyApp(ui, server)
 
 **Instructor Dashboard**
 
-![Instructor 1](<dahsboard_shots/Screenshot 2026-04-18 at 8.57.12 PM.png>)
+![Instructor 1](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.12%20PM.png)
 
-![Instructor 2](<dahsboard_shots/Screenshot 2026-04-18 at 8.57.21 PM.png>)
+![Instructor 2](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.21%20PM.png)
 
-![Instructor 3](<dahsboard_shots/Screenshot 2026-04-18 at 8.57.26 PM.png>)
+![Instructor 3](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.26%20PM.png)
 
-![Instructor 4](<dahsboard_shots/Screenshot 2026-04-18 at 8.57.30 PM.png>)
+![Instructor 4](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.30%20PM.png)
 
-![Instructor 5](<dahsboard_shots/Screenshot 2026-04-18 at 8.57.34 PM.png>)
+![Instructor 5](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.34%20PM.png)
 
 **Student Dashboard**
 
-![Student 1](<dahsboard_shots/Screenshot 2026-04-18 at 8.58.04 PM.png>)
+![Student 1](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.04%20PM.png)
 
-![Student 2](<dahsboard_shots/Screenshot 2026-04-18 at 8.58.16 PM.png>)
+![Student 2](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.16%20PM.png)
 
-![Student 3](<dahsboard_shots/Screenshot 2026-04-18 at 8.58.20 PM.png>)
+![Student 3](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.20%20PM.png)
 
-![Student 4](<dahsboard_shots/Screenshot 2026-04-18 at 8.58.28 PM.png>)
+![Student 4](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.28%20PM.png)
 
-![Student 5](<dahsboard_shots/Screenshot 2026-04-18 at 8.58.44 PM.png>)
+![Student 5](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.44%20PM.png)
 
 **Question 6:** Evaluate your group dashboard from the perspective of the instructor (teacher dashboard) and from the perspective of the student (student dashboard). What do you like about it, what would you change or add to it if you had more time?
 
@@ -821,7 +817,7 @@ shinyApp(ui, server)
 
 -   Shiwen Zhao (sz752): I used Claude for my assigned task (the scatterplot of survey score vs. average quiz score with a line of best fit). I came up with the implementation plan myself and then had Claude help me translate it into R/ggplot code and debug issues during testing. It was helpful for speeding up the coding and fixing small errors.
 
--   Theo Berk (tb547): I used Claude for code review and to review the assignment before submission so make sure our group didn't miss any parts of the project. 
+-   Theo Berk (tb547): I used Claude for code review and to review the assignment before submission so make sure our group didn't miss any parts of the project.
 
 # Submit Project
 
