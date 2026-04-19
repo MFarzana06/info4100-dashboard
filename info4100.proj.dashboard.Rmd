@@ -276,6 +276,9 @@ student_dash = tabItem(
       infoBoxOutput("total_asked", width = 4),
       infoBoxOutput("total_answered", width = 4),
       infoBoxOutput("total_correct", width = 4)
+    ),
+    fluidRow(
+      infoBoxOutput("weeks_above_avg", width = 12)
   )
 )
 #######################################
@@ -390,20 +393,74 @@ server = function(input, output) {
     theme_classic()
     })
     
+    # Steven (jx453): Line plot of quiz scores across the weeks of the
+    # semester for the selected student, with the class average overlaid so
+    # the student can see how they track against the class week by week.
     output$student_quiz_trend = renderPlot({
+        # selected student's quiz scores, indexed by week of semester
         student_quiz <- df_by_lecture %>%
           filter(STUDENT_KEY == input$student_id, !is.na(QUIZ_SCORE)) %>%
+          mutate(LECTURE_DATE = as.Date(as.character(ACAD_DATE_KEY),
+                                        format = "%Y%m%d")) %>%
           group_by(QUIZ_NUMBER) %>%
-          summarise(quiz_score = first(QUIZ_SCORE), .groups = "drop")
-    
-        ggplot(student_quiz, aes(x = QUIZ_NUMBER, y = quiz_score)) +
-          geom_line(color = "#2C7FB8", linewidth = 1.5) +
-          geom_point(color = "#2C7FB8", size = 3) +
+          summarise(
+            LECTURE_DATE = min(LECTURE_DATE),
+            quiz_score   = first(QUIZ_SCORE),
+            .groups = "drop"
+          ) %>%
+          arrange(LECTURE_DATE) %>%
+          mutate(WEEK_OF_SEMESTER = as.numeric(
+            difftime(LECTURE_DATE, min(LECTURE_DATE), units = "weeks")
+          ) + 1)
+
+        # class average per quiz for the same cohort year
+        student_year <- df_by_lecture %>%
+          filter(STUDENT_KEY == input$student_id) %>%
+          pull(YEAR) %>%
+          first()
+
+        class_quiz <- df_by_lecture %>%
+          filter(YEAR == student_year, !is.na(QUIZ_SCORE)) %>%
+          group_by(QUIZ_NUMBER) %>%
+          summarise(class_avg = mean(QUIZ_SCORE, na.rm = TRUE), .groups = "drop")
+
+        plot_data <- student_quiz %>%
+          left_join(class_quiz, by = "QUIZ_NUMBER")
+
+        # highlight the best and worst week for quick self-reflection
+        best_week  <- plot_data %>% slice_max(quiz_score, n = 1, with_ties = FALSE)
+        worst_week <- plot_data %>% slice_min(quiz_score, n = 1, with_ties = FALSE)
+
+        ggplot(plot_data, aes(x = WEEK_OF_SEMESTER)) +
+          geom_line(aes(y = class_avg, color = "Class Avg"),
+                    linewidth = 1, linetype = "dashed") +
+          geom_line(aes(y = quiz_score, color = "You"), linewidth = 1.5) +
+          geom_point(aes(y = quiz_score, color = "You"), size = 3) +
+          # best/worst week markers
+          geom_point(data = best_week, aes(y = quiz_score),
+                     color = "#2CA02C", size = 5.5,
+                     shape = 21, fill = "white", stroke = 2) +
+          geom_point(data = worst_week, aes(y = quiz_score),
+                     color = "#D62728", size = 5.5,
+                     shape = 21, fill = "white", stroke = 2) +
+          geom_text(data = best_week,
+                    aes(y = quiz_score,
+                        label = paste0("Best: ", round(quiz_score, 1))),
+                    color = "#2CA02C", vjust = -1.2, fontface = "bold", size = 3.5) +
+          geom_text(data = worst_week,
+                    aes(y = quiz_score,
+                        label = paste0("Worst: ", round(quiz_score, 1))),
+                    color = "#D62728", vjust = 2, fontface = "bold", size = 3.5) +
+          scale_color_manual(
+            name = "",
+            values = c("You" = "#2C7FB8", "Class Avg" = "#C97FA1")
+          ) +
           scale_y_continuous(limits = c(0, 20)) +
-          scale_x_continuous(breaks = 1:10) +
+          scale_x_continuous(breaks = scales::pretty_breaks()) +
           labs(
-            title = paste("Quiz Score Trend for Student", input$student_id),
-            x = "Quiz Number",
+            title = paste("Quiz Scores Across the Weeks — Student",
+                          input$student_id),
+            x = "Week of Semester",
             y = "Quiz Score (out of 20)"
           ) +
           theme_classic()
@@ -717,14 +774,48 @@ server = function(input, output) {
       summarise(
         total_correct = sum(CORRECT_Q_CLICKER, na.rm = TRUE)
         )
-      
+
       total_correct <- student_summary$total_correct
-      
+
       infoBox(
         title = "Clickers Correct",
         value = total_correct,
         icon = icon("check"),
         color = "teal"
+        )
+      })
+
+    # Steven (jx453): summary stat showing how many weeks the student scored
+    # at or above the class average — complements the line plot above.
+    output$weeks_above_avg <- renderInfoBox({
+      student_year <- df_by_lecture %>%
+        filter(STUDENT_KEY == input$student_id) %>%
+        pull(YEAR) %>%
+        first()
+
+      student_quiz <- df_by_lecture %>%
+        filter(STUDENT_KEY == input$student_id, !is.na(QUIZ_SCORE)) %>%
+        group_by(QUIZ_NUMBER) %>%
+        summarise(student_score = first(QUIZ_SCORE), .groups = "drop")
+
+      class_quiz <- df_by_lecture %>%
+        filter(YEAR == student_year, !is.na(QUIZ_SCORE)) %>%
+        group_by(QUIZ_NUMBER) %>%
+        summarise(class_avg = mean(QUIZ_SCORE, na.rm = TRUE), .groups = "drop")
+
+      comparison <- student_quiz %>%
+        left_join(class_quiz, by = "QUIZ_NUMBER") %>%
+        filter(!is.na(class_avg))
+
+      weeks_above <- sum(comparison$student_score >= comparison$class_avg,
+                         na.rm = TRUE)
+      total_weeks <- nrow(comparison)
+
+      infoBox(
+        title = "Weeks At or Above Class Avg",
+        value = paste0(weeks_above, " / ", total_weeks),
+        icon = icon("trophy"),
+        color = "green"
         )
       })
     
@@ -816,6 +907,7 @@ shinyApp(ui, server)
 -   Shiwen Zhao (sz752): I spent about 1-2 hours.
 -   Gianna Ou (gyo4): I spent 2-3 hours.
 -   Theo Berk (tb547): I spent 1-2 hours
+-   Steven Xie (jx453): I spent about 2 hours.
 
 Total for the group around 10 hours.
 
@@ -832,6 +924,8 @@ Total for the group around 10 hours.
 -   Shiwen Zhao (sz752): I used Claude for my assigned task (the scatterplot of survey score vs. average quiz score with a line of best fit). I came up with the implementation plan myself and then had Claude help me translate it into R/ggplot code and debug issues during testing. It was helpful for speeding up the coding and fixing small errors.
 
 -   Theo Berk (tb547): I used Claude for code review and to review the assignment before submission so make sure our group didn't miss any parts of the project.
+
+-   Steven Xie (jx453): I used Claude to help implement my assigned visualization (the line plot of quiz scores across the weeks for the student). I planned the approach myself — using the lecture dates from `ACAD_DATE_KEY` to derive a "week of semester" axis, overlaying the class average so the student can see how they track against the class each week, highlighting the student's best/worst weeks with color-coded markers and labels, and adding a "Weeks At or Above Class Avg" info box as a quick self-reflection summary. I then had Claude help me write the ggplot code and debug a couple of date-parsing and join issues. It was useful for speeding up the coding, but most of the design decisions were my own.
 
 # Submit Project
 
