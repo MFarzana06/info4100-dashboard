@@ -465,12 +465,11 @@ server = function(input, output) {
       y = "Number of Students"
     ) +
     
-    # extend plot area to the right + allow drawing outside
     coord_cartesian(xlim = c(0, max_x + 15), clip = "off") +
     
     theme_classic() +
     theme(
-      plot.margin = margin(10, 80, 10, 10)  # add space on right
+      plot.margin = margin(10, 80, 10, 10)  
     )
   })
    
@@ -784,15 +783,11 @@ shinyApp(ui, server)
 
 **Student Dashboard**
 
-![Student 1](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.04%20PM.png)
+![](images/clipboard-2638224811.png)
 
-![Student 2](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.16%20PM.png)
+![](images/clipboard-1272304472.png)
 
-![Student 3](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.20%20PM.png)
-
-![Student 4](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.28%20PM.png)
-
-![Student 5](dahsboard_shots/Screenshot%202026-04-18%20at%208.58.44%20PM.png)
+![](images/clipboard-4006520026.png)
 
 **Question 6:** Evaluate your group dashboard from the perspective of the instructor (teacher dashboard) and from the perspective of the student (student dashboard). What do you like about it, what would you change or add to it if you had more time?
 
@@ -803,7 +798,7 @@ shinyApp(ui, server)
 -   What would you change or add to it if you had more time?
     -   We would have liked to allow students to see something predictive about their course performance, such as a predicted probability of scoring certain final grades in the class.
 -   What was the biggest challenge you faced? How did you address it?
-    -   The biggest challenge we faced was deciding which data visualizations we wanted to implement them. We addressed this by doing some research and seeing some example dashboards and how we can do something similar.
+    -   The biggest challenge we faced was deciding which data visualizations we wanted to implement. We addressed this by doing some research, looking on canvas, and seeing some example dashboards and how we can do something similar.
 
 *Reflection for the teacher dashboard*
 
@@ -822,11 +817,15 @@ shinyApp(ui, server)
 -   Gianna Ou (gyo4): I spent 2-3 hours.
 -   Theo Berk (tb547): I spent 1-2 hours
 
+Total for the group around 10 hours.
+
 # Generative AI usage
 
 **As stated in the course syllabus, using generative AI is allowed to help you as you complete this homework. We are interested in how it is being used and whether it is helpful for you.**
 
 -   How much did you use generative AI (e.g., not at all, some, most, or all the questions) and which one did you use?
+
+    -   We used some AI assistance for some questions to refine and check our code for part four to prepare the visualizations.
 
 -   If you used generative AI, how did you use it and was it helpful?
 
