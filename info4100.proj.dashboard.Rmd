@@ -409,34 +409,55 @@ server = function(input, output) {
           theme_classic()
     })
     
-    output$student_hist = renderPlot({
+  output$student_hist = renderPlot({
   
-    # average quiz score per student
-    avg_quiz_by_student <- df_by_lecture %>%
+  # average quiz score per student
+  avg_quiz_by_student <- df_by_lecture %>%
     group_by(STUDENT_KEY) %>%
     summarise(avg_quiz = mean(QUIZ_SCORE, na.rm = TRUE))
   
-    # selected student value
-    student_avg <- avg_quiz_by_student %>%
+  # selected student value
+  student_avg <- avg_quiz_by_student %>%
     filter(STUDENT_KEY == input$student_id) %>%
     pull(avg_quiz)
   
-    # class average (optional but recommended)
-    class_avg <- mean(avg_quiz_by_student$avg_quiz, na.rm = TRUE)
+  # class average 
+  class_avg <- mean(avg_quiz_by_student$avg_quiz, na.rm = TRUE)
   
-    ggplot(avg_quiz_by_student, aes(x = avg_quiz)) +
+  # max x value for positioning labels
+  max_x <- max(avg_quiz_by_student$avg_quiz, na.rm = TRUE)
+  
+  ggplot(avg_quiz_by_student, aes(x = avg_quiz)) +
     geom_histogram(binwidth = 4, fill = "#BCD8EC", color = "black") +
     
-    # student line
+    # vertical lines
     geom_vline(xintercept = student_avg,
                color = "blue",
                size = 1.5) +
     
-    # class average line
     geom_vline(xintercept = class_avg,
                color = "red",
                linetype = "dashed",
                size = 1.2) +
+    
+    # labels on the right side
+    annotate("text",
+             x = max_x + 5,
+             y = Inf,
+             label = paste("You (", input$student_id, "): ", round(student_avg,1), sep = ""),
+             hjust = 0,
+             vjust = 2,
+             color = "blue",
+             fontface = "bold") +
+    
+    annotate("text",
+             x = max_x + 5,
+             y = Inf,
+             label = paste("Class Avg: ", round(class_avg,1)),
+             hjust = 0,
+             vjust = 4,
+             color = "red",
+             fontface = "bold") +
     
     labs(
       title = "Distribution of Average Quiz Scores",
@@ -444,15 +465,15 @@ server = function(input, output) {
       y = "Number of Students"
     ) +
     
-    annotate("text",
-             x = student_avg,
-             y = Inf,
-             label = paste("You (", input$student_id, ")", sep = ""),
-             vjust = -0.5,
-             color = '#FFBCE1') +
+    # extend plot area to the right + allow drawing outside
+    coord_cartesian(xlim = c(0, max_x + 15), clip = "off") +
     
-    theme_classic()
-    })
+    theme_classic() +
+    theme(
+      plot.margin = margin(10, 80, 10, 10)  # add space on right
+    )
+  })
+   
     output$inst_quiz_hist = renderPlot({
         student_avg_quiz <- df_by_lecture %>%
           filter(!is.na(QUIZ_SCORE)) %>%
@@ -753,19 +774,13 @@ ui = dashboardPage(dhead, dside, dbody)
 shinyApp(ui, server)
 ```
 
-**Question 5:** Add screenshots of your group's dahsboards below using this syntax or simply add them to the Word document after knitting:
+**Question 5:** Add screenshots of your group's dashboards below using this syntax or simply add them to the Word document after knitting:
 
 **Instructor Dashboard**
 
-![Instructor 1](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.12%20PM.png)
+![](images/clipboard-1761405144.png)
 
-![Instructor 2](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.21%20PM.png)
-
-![Instructor 3](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.26%20PM.png)
-
-![Instructor 4](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.30%20PM.png)
-
-![Instructor 5](dahsboard_shots/Screenshot%202026-04-18%20at%208.57.34%20PM.png)
+![](images/clipboard-2979727662.png)
 
 **Student Dashboard**
 
